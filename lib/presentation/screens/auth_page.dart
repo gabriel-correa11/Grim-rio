@@ -4,6 +4,7 @@ import 'package:grimorio/core/providers/auth_controller.dart';
 import 'package:grimorio/presentation/widgets/auth_header.dart';
 import 'package:grimorio/presentation/widgets/auth_form_fields.dart';
 import 'package:grimorio/presentation/widgets/auth_action_buttons.dart';
+import 'package:grimorio/presentation/theme/app_colors.dart';
 
 class AuthPage extends StatelessWidget {
   const AuthPage({super.key});
@@ -51,11 +52,34 @@ class AuthPage extends StatelessWidget {
                           obscurePassword: controller.obscurePassword,
                           onToggleObscurePassword:
                           controller.toggleObscurePassword,
-                          termsAccepted: controller.termsAccepted,
-                          onToggleTerms: controller.toggleTerms,
-                          onShowTermsDialog: () =>
-                              controller.showTermsDialog(context),
                         ),
+                        if (!controller.isLogin)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Row(
+                              children: [
+                                Checkbox(
+                                  value: controller.termsAccepted,
+                                  onChanged: controller.toggleTerms,
+                                  activeColor: AppColors.azulClaro,
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: () =>
+                                        controller.showTermsDialog(context),
+                                    child: Text(
+                                      'Ler e Aceitar Termos e Política',
+                                      style: TextStyle(
+                                        color: controller.termsAccepted
+                                            ? Colors.green.shade300
+                                            : Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         AuthActionButtons(
                           isLogin: controller.isLogin,
                           isLoading: controller.isLoading,

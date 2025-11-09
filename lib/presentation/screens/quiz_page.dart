@@ -155,7 +155,7 @@ class _QuizPageState extends State<QuizPage> {
             style: const TextStyle(color: Colors.white, fontSize: 16)),
         actions: [
           TextButton(
-              child: const Text('Voltar',
+              child: const Text('Próximo',
                   style: TextStyle(color: AppColors.azulClaro, fontSize: 18)),
               onPressed: () {
                 Navigator.of(ctx).pop();
@@ -246,7 +246,7 @@ class _QuizPageState extends State<QuizPage> {
     final currentQuestion = _shuffledQuestions[_currentQuestionIndex];
     final currentOptions = _shuffledOptionsPerQuestion[_currentQuestionIndex];
     return Scaffold(
-      appBar: AppBar(title: const Text('Quiz Rápido')),
+      appBar: AppBar(title: const Text('Quiz')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

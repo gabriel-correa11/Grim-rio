@@ -29,7 +29,7 @@ final ThemeData appTheme = ThemeData(
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: OutlinedButton.styleFrom(
-      side: const BorderSide(color: AppColors.azulForte),
+      side: const BorderSide(color: AppColors.azulForte, width: 2.0),
       foregroundColor: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 16.0),
       textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),

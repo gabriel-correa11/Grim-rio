@@ -7,9 +7,6 @@ class AuthFormFields extends StatelessWidget {
   final bool isLogin;
   final bool obscurePassword;
   final VoidCallback onToggleObscurePassword;
-  final bool termsAccepted;
-  final ValueChanged<bool?> onToggleTerms;
-  final VoidCallback onShowTermsDialog;
 
   const AuthFormFields({
     super.key,
@@ -19,9 +16,6 @@ class AuthFormFields extends StatelessWidget {
     required this.isLogin,
     required this.obscurePassword,
     required this.onToggleObscurePassword,
-    required this.termsAccepted,
-    required this.onToggleTerms,
-    required this.onShowTermsDialog,
   });
 
   @override
@@ -93,29 +87,6 @@ class AuthFormFields extends StatelessWidget {
               }
               return null;
             },
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Checkbox(
-                value: termsAccepted,
-                onChanged: onToggleTerms,
-                activeColor: Theme.of(context).colorScheme.secondary,
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: onShowTermsDialog,
-                  child: const Text(
-                    'Ler e Aceitar Termos e Política',
-                    style: TextStyle(
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ],
