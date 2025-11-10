@@ -48,11 +48,12 @@ class _BookSelectionPageState extends State<BookSelectionPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ProfilePage()),
-              ).then((_) => _loadUserProfile());
+              );
+              _loadUserProfile();
             },
           ),
         ],
@@ -65,7 +66,9 @@ class _BookSelectionPageState extends State<BookSelectionPage> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data == null) {
                 return const Center(child: Text('Erro ao carregar perfil.'));
               }
 
@@ -77,8 +80,11 @@ class _BookSelectionPageState extends State<BookSelectionPage> {
                 itemBuilder: (context, index) {
                   final book = books[index];
                   final bool isLocked = userProfile.level < book.difficulty;
-                  final Color tileColor = isLocked ? AppColors.azulEscuro.withAlpha(150) : AppColors.azulRoyal;
-                  final Color textColor = isLocked ? Colors.grey.shade500 : Colors.white;
+                  final Color tileColor = isLocked
+                      ? AppColors.azulEscuro.withAlpha(150)
+                      : AppColors.azulRoyal;
+                  final Color textColor =
+                  isLocked ? Colors.grey.shade500 : Colors.white;
 
                   return Card(
                     color: tileColor,
@@ -88,22 +94,26 @@ class _BookSelectionPageState extends State<BookSelectionPage> {
                       borderRadius: BorderRadius.circular(12.0),
                     ),
                     child: ListTile(
-                      contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-                      onTap: isLocked ? () {
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 15.0),
+                      onTap: isLocked
+                          ? () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Alcance o Nível ${book.difficulty} para desbloquear este livro!'),
+                            content: Text(
+                                'Alcance o Nível ${book.difficulty} para desbloquear este livro!'),
                             backgroundColor: Colors.red.shade400,
                           ),
                         );
-                      } : () {
+                      }
+                          : () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => WorldMapPage(book: book),
+                            builder: (context) =>
+                                WorldMapPage(book: book),
                           ),
-                        );
+                        ).then((_) => _loadUserProfile());
                       },
                       leading: ClipRRect(
                         borderRadius: BorderRadius.circular(8.0),
@@ -133,13 +143,13 @@ class _BookSelectionPageState extends State<BookSelectionPage> {
                       ),
                       trailing: isLocked
                           ? Icon(Icons.lock, color: textColor, size: 20)
-                          : Icon(Icons.arrow_forward_ios, color: textColor, size: 16),
+                          : Icon(Icons.arrow_forward_ios,
+                          color: textColor, size: 16),
                     ),
                   );
                 },
               );
-            }
-        ),
+            }),
       ),
     );
   }

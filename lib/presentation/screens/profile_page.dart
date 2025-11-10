@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:grimorio/core/logic/achievement_logic.dart';
+import 'package:grimorio/core/models/achievement.dart';
 import 'package:grimorio/core/services/auth_service.dart';
 import 'package:grimorio/core/services/database_service.dart';
 import 'package:grimorio/core/logic/game_logic.dart';
@@ -50,7 +52,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   const Text('Não foi possível carregar o perfil.'),
                   const SizedBox(height: 10),
                   ElevatedButton(
-                      onPressed: _loadUserProfile, child: const Text('Tentar Novamente'))
+                      onPressed: _loadUserProfile,
+                      child: const Text('Tentar Novamente'))
                 ],
               ),
             );
@@ -58,32 +61,46 @@ class _ProfilePageState extends State<ProfilePage> {
           final userProfile = snapshot.data!;
           return RefreshIndicator(
             onRefresh: () async => _loadUserProfile(),
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              children: [
-                const SizedBox(height: 24),
-                _buildGuardianSeal(userProfile),
-                const SizedBox(height: 16),
-                Center(
-                    child: Text(userProfile.name,
-                        style: const TextStyle(
-                            fontSize: 26, fontWeight: FontWeight.bold))),
-                const SizedBox(height: 16),
-                _buildMasteryInsignia(userProfile),
-                const SizedBox(height: 32),
-                _buildProgressSection(userProfile),
-                const SizedBox(height: 24),
-                _buildWisdomIndex(userProfile), // Seção reintroduzida
-                const SizedBox(height: 24),
-                _buildAchievementsButton(context, userProfile),
-                const SizedBox(height: 24),
-                if (userProfile.lastQuizScore != null)
-                  _buildLastScoreCard(userProfile),
-                const SizedBox(height: 40),
-                _buildLogoutButton(),
-                const SizedBox(height: 16),
-              ],
-            ),
+            child: LayoutBuilder(builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints:
+                  BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 16),
+                          _buildGuardianSeal(userProfile),
+                          const SizedBox(height: 12),
+                          Center(
+                              child: Text(userProfile.name,
+                                  style: const TextStyle(
+                                      fontSize: 26,
+                                      fontWeight: FontWeight.bold))),
+                          const SizedBox(height: 12),
+                          _buildMasteryInsignia(userProfile),
+                          const SizedBox(height: 24),
+                          _buildProgressSection(userProfile),
+                          const SizedBox(height: 16),
+                          _buildWisdomIndex(userProfile),
+                          const SizedBox(height: 16),
+                          _buildAchievementsButton(context, userProfile),
+                          const SizedBox(height: 16),
+                          if (userProfile.lastQuizScore != null)
+                            _buildLastScoreCard(userProfile),
+                          const Spacer(),
+                          _buildLogoutButton(),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
           );
         },
       ),
@@ -234,7 +251,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
   Widget _buildAchievementsButton(BuildContext context, UserProfile profile) {
     return ElevatedButton.icon(
       icon: const Icon(Icons.shield_outlined),
@@ -243,7 +259,8 @@ class _ProfilePageState extends State<ProfilePage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => AchievementsPage(unlockedIds: profile.unlockedAchievementIds),
+            builder: (context) =>
+                AchievementsPage(unlockedIds: profile.unlockedAchievementIds),
           ),
         );
       },

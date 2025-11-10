@@ -80,7 +80,6 @@ class _WorldMapPageState extends State<WorldMapPage> {
         return Colors.green.shade400;
     }
   }
-
   void _navigateToQuiz(Chapter chapter) {
     final questions = _quizBrain.getQuestionsForChapter(chapter.id);
     if (questions.isNotEmpty) {
@@ -89,6 +88,7 @@ class _WorldMapPageState extends State<WorldMapPage> {
         MaterialPageRoute(
           builder: (context) => QuizPage(
             questions: questions,
+            book: widget.book,
             chapterId: chapter.id,
             baseXp: widget.book.baseXp,
           ),
@@ -125,7 +125,8 @@ class _WorldMapPageState extends State<WorldMapPage> {
               final chapter = widget.book.chapters[index];
               final bool isLast = index == widget.book.chapters.length - 1;
               final bool alignLeft = index % 2 != 0;
-              return _buildMapNode(chapter, alignLeft: alignLeft, isLast: isLast);
+              return _buildMapNode(chapter,
+                  alignLeft: alignLeft, isLast: isLast);
             }),
           ),
         ),
@@ -133,7 +134,8 @@ class _WorldMapPageState extends State<WorldMapPage> {
     );
   }
 
-  Widget _buildMapNode(Chapter chapter, {required bool alignLeft, required bool isLast}) {
+  Widget _buildMapNode(Chapter chapter,
+      {required bool alignLeft, required bool isLast}) {
     final status = chapter.status;
     final color = _getColorForStatus(status);
     final icon = _getIconForStatus(status);
@@ -150,9 +152,13 @@ class _WorldMapPageState extends State<WorldMapPage> {
         height: nodeSize,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: isLocked ? AppColors.azulEscuro.withAlpha(200) : AppColors.azulRoyal,
+          color: isLocked
+              ? AppColors.azulEscuro.withAlpha(200)
+              : AppColors.azulRoyal,
           border: Border.all(color: color, width: 3),
-          boxShadow: isLocked ? null : [
+          boxShadow: isLocked
+              ? null
+              : [
             BoxShadow(
               color: color.withAlpha(100),
               blurRadius: 10,
@@ -185,12 +191,10 @@ class _WorldMapPageState extends State<WorldMapPage> {
               children: [
                 if (alignLeft) Expanded(child: titleWidget),
                 if (alignLeft) const SizedBox(width: 16),
-
                 SizedBox(
                   width: nodeSize,
                   child: Center(child: nodeWidget),
                 ),
-
                 if (!alignLeft) const SizedBox(width: 16),
                 if (!alignLeft) Expanded(child: titleWidget),
               ],

@@ -1,4 +1,4 @@
-//import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:grimorio/core/models/achievement.dart';
 import 'package:grimorio/core/models/user_profile.dart';
 
@@ -22,6 +22,24 @@ class AchievementLogic {
       description: 'Complete um quiz com 100% de acerto.',
       iconCodePoint: '0xf05a1',
     ),
+    Achievement(
+      id: 'level_5',
+      name: 'Mago',
+      description: 'Alcance o Nível 5.',
+      iconCodePoint: '0xece5',
+    ),
+    Achievement(
+      id: 'first_book',
+      name: 'Leitor Voraz',
+      description: 'Complete todos os capítulos de um livro.',
+      iconCodePoint: '0xea51',
+    ),
+    Achievement(
+      id: 'level_10',
+      name: 'Supremo',
+      description: 'Alcance o Nível 10, o pináculo do conhecimento.',
+      iconCodePoint: '0xf06b6',
+    ),
   ];
 
   static List<String> checkAchievements(
@@ -43,6 +61,14 @@ class AchievementLogic {
     if (!currentlyUnlockedIds.contains('perfect_quiz') &&
         currentScore == totalQuestions) {
       newlyUnlockedIds.add('perfect_quiz');
+    }
+
+    if (!currentlyUnlockedIds.contains('level_5') && userProfile.level >= 5) {
+      newlyUnlockedIds.add('level_5');
+    }
+
+    if (!currentlyUnlockedIds.contains('level_10') && userProfile.level >= 10) {
+      newlyUnlockedIds.add('level_10');
     }
 
     return newlyUnlockedIds;

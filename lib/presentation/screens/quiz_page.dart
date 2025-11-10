@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:grimorio/core/logic/achievement_logic.dart';
+import 'package:grimorio/core/models/book.dart';
 import 'package:grimorio/core/services/auth_service.dart';
 import 'package:grimorio/core/services/database_service.dart';
 import 'package:grimorio/core/models/question.dart';
@@ -10,13 +11,15 @@ import 'dart:math';
 class QuizPage extends StatefulWidget {
   final List<Question> questions;
   final String chapterId;
+  final Book book;
   final int baseXp;
 
   const QuizPage({
     super.key,
     required this.questions,
     required this.chapterId,
-    required this.baseXp
+    required this.book,
+    required this.baseXp,
   });
 
   @override
@@ -28,7 +31,6 @@ class _QuizPageState extends State<QuizPage> {
   final DatabaseService _databaseService = DatabaseService();
   late List<Question> _shuffledQuestions;
   late List<List<QuestionOptions>> _shuffledOptionsPerQuestion;
-  late List<int> _correctAnswerOriginalIndex;
 
   int _currentQuestionIndex = 0;
   int _score = 0;
@@ -46,11 +48,9 @@ class _QuizPageState extends State<QuizPage> {
     _shuffledQuestions.shuffle(Random());
 
     _shuffledOptionsPerQuestion = [];
-    _correctAnswerOriginalIndex = [];
 
     for (var question in _shuffledQuestions) {
       List<QuestionOptions> optionsCopy = List.from(question.options);
-      _correctAnswerOriginalIndex.add(optionsCopy.indexWhere((opt) => opt.isCorrect));
       optionsCopy.shuffle(Random());
       _shuffledOptionsPerQuestion.add(optionsCopy);
     }
@@ -61,13 +61,13 @@ class _QuizPageState extends State<QuizPage> {
     isAnswered = false;
   }
 
-
   void _checkAnswer(int index) {
     if (isAnswered) {
       return;
     }
 
-    final List<QuestionOptions> currentOptions = _shuffledOptionsPerQuestion[_currentQuestionIndex];
+    final List<QuestionOptions> currentOptions =
+    _shuffledOptionsPerQuestion[_currentQuestionIndex];
     final QuestionOptions selectedOption = currentOptions[index];
 
     if (selectedOption.isCorrect) {
@@ -93,10 +93,28 @@ class _QuizPageState extends State<QuizPage> {
     });
   }
 
+  Future<List<String>> _checkBookCompletion(UserProfile profile) async {
+    if (profile.unlockedAchievementIds.contains('first_book')) {
+      return [];
+    }
+
+    final requiredIds = widget.book.chapters.map((c) => c.id).toSet();
+    final user = _authService.getCurrentUser();
+    if (user == null) return [];
+
+    final completedAttempts = await _databaseService.getQuizAttempts(user.uid);
+    final completedIds = completedAttempts.keys.toSet();
+
+    if (completedIds.containsAll(requiredIds)) {
+      return ['first_book'];
+    }
+    return [];
+  }
+
   Future<void> _handleQuizCompletion() async {
     final user = _authService.getCurrentUser();
     if (user == null) {
-      if(mounted) _showResultDialog(true);
+      if (mounted) _showResultDialog(true);
       return;
     }
 
@@ -120,12 +138,15 @@ class _QuizPageState extends State<QuizPage> {
 
     UserProfile? updatedProfile = await _databaseService.getUserProfile(user);
     if (updatedProfile != null) {
-      final newlyUnlocked = AchievementLogic.checkAchievements(
+      List<String> newlyUnlocked = AchievementLogic.checkAchievements(
         updatedProfile,
         _score,
         _shuffledQuestions.length,
         updatedProfile.unlockedAchievementIds,
       );
+
+      final newlyUnlockedBook = await _checkBookCompletion(updatedProfile);
+      newlyUnlocked.addAll(newlyUnlockedBook);
 
       if (newlyUnlocked.isNotEmpty) {
         await _databaseService.unlockAchievements(user.uid, newlyUnlocked);
@@ -142,7 +163,9 @@ class _QuizPageState extends State<QuizPage> {
 
   void _showResultDialog(bool isFirstCompletion) {
     if (!mounted) return;
-    final xpGained = isFirstCompletion ? _score * widget.baseXp : (_score * widget.baseXp / 2).round();
+    final xpGained = isFirstCompletion
+        ? _score * widget.baseXp
+        : (_score * widget.baseXp / 2).round();
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -155,8 +178,13 @@ class _QuizPageState extends State<QuizPage> {
             style: const TextStyle(color: Colors.white, fontSize: 16)),
         actions: [
           TextButton(
-              child: const Text('Próximo',
-                  style: TextStyle(color: AppColors.azulClaro, fontSize: 18)),
+              child: const Text(
+                'PRÓXIMO',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
               onPressed: () {
                 Navigator.of(ctx).pop();
                 if (Navigator.canPop(context)) {
@@ -201,14 +229,15 @@ class _QuizPageState extends State<QuizPage> {
       if (achievement != null) {
         scaffoldMessenger.showSnackBar(
           SnackBar(
-            backgroundColor: AppColors.azulClaro,
+            backgroundColor: AppColors.azulRoyal,
             content: Row(
               children: [
                 Icon(
                     IconData(int.parse(achievement.iconCodePoint),
                         fontFamily: 'MaterialIcons'),
-                    color: Colors.white),
-                const SizedBox(width: 10),
+                    color: Colors.amber.shade300,
+                    size: 30),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Conquista Desbloqueada: ${achievement.name}!',
@@ -229,7 +258,8 @@ class _QuizPageState extends State<QuizPage> {
     if (!isAnswered) {
       return AppColors.azulForte;
     }
-    final List<QuestionOptions> currentOptions = _shuffledOptionsPerQuestion[_currentQuestionIndex];
+    final List<QuestionOptions> currentOptions =
+    _shuffledOptionsPerQuestion[_currentQuestionIndex];
     final QuestionOptions option = currentOptions[index];
 
     if (option.isCorrect) {
@@ -246,7 +276,7 @@ class _QuizPageState extends State<QuizPage> {
     final currentQuestion = _shuffledQuestions[_currentQuestionIndex];
     final currentOptions = _shuffledOptionsPerQuestion[_currentQuestionIndex];
     return Scaffold(
-      appBar: AppBar(title: const Text('Quiz')),
+      appBar: AppBar(title: const Text('Quiz Rápido')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
