@@ -1,79 +1,100 @@
+<div align="center"> <h1>Projeto Grimório</h1> <h3><a href="#">Português</a> • <a href="#english-version">English</a></h3> </div>
 
 <div align="center">
-<h1>Projeto Grimório</h1>
-<h3><a href="#">Português</a> • <a href="#english-version">English</a></h3>
-</div>
-
-<div align="center">
-
-Status do Projeto: Em Desenvolvimento Ativo 🚀
+ MVP Funcional 
 
 </div>
 
-Este é o repositório do nosso projeto de faculdade, o Grimório. A proposta é criar um aplicativo mobile em Flutter que utiliza gamificação para incentivar o hábito da leitura, transformando cada livro em uma jornada de progressão e conhecimento.
+Este é o repositório do projeto acadêmico Grimório, um aplicativo mobile desenvolvido em Flutter que utiliza gamificação para incentivar o hábito da leitura, transformando cada livro em uma jornada de progressão e conhecimento.
 
-1. O problema que queremos resolver
+1. O Problema que Queremos Resolver
 Em um mundo onde livros competem pela atenção com redes sociais e jogos que oferecem recompensas instantâneas, o Grimório busca usar essa mesma lógica a favor da leitura. O aplicativo foi projetado para dar ao usuário uma sensação tangível de progresso e conquista a cada capítulo lido e quiz finalizado.
 
 2. Arquitetura e Decisões Técnicas
 O projeto foi construído com foco em escalabilidade, manutenibilidade e performance, utilizando uma arquitetura limpa e tecnologias modernas.
 
-Flutter & Dart: Escolha principal para o desenvolvimento multiplataforma (Android/iOS) a partir de um código único. A familiaridade prévia com orientação a objetos facilitou a adoção do Dart.
+Flutter & Dart: Escolha principal para o desenvolvimento multiplataforma (Android/iOS) a partir de um código único.
 
 Firebase (Backend as a Service):
 
-Firebase Authentication: Utilizado para um sistema de autenticação robusto e seguro, incluindo cadastro com e-mail/senha, verificação de e-mail e recuperação de senha.
+Firebase Authentication: Utilizado para um sistema de autenticação robusto e seguro (cadastro, login, verificação de e-mail, recuperação de senha).
 
-Cloud Firestore: O coração da nossa gamificação. Utilizado como um banco de dados NoSQL para salvar o perfil e o progresso de cada usuário (XP, nível, último desempenho, etc.) de forma persistente e em tempo real.
+Cloud Firestore: O coração da gamificação. Utilizado como um banco de dados NoSQL para salvar o perfil e o progresso de cada usuário (XP, nível, último desempenho, conquistas desbloqueadas, progresso por capítulo) de forma persistente.
 
-Arquitetura em Camadas (Refatorada): O código foi reestruturado para seguir princípios de Arquitetura Limpa, separando as responsabilidades de forma clara:
+Arquitetura em Camadas (Refatorada): O código foi reestruturado para seguir princípios de Arquitetura Limpa, separando as responsabilidades:
 
-core: Camada que contém toda a lógica de negócio, modelos de dados e comunicação com serviços externos (Firebase). É o cérebro do app.
+core: Camada que contém toda a lógica de negócio, modelos de dados (models), serviços (services), lógica de jogo (logic), controladores (providers) e dados estáticos (data).
 
-presentation: Camada responsável por tudo que o usuário vê e interage (telas, widgets e tema visual).
+presentation: Camada responsável por tudo que o usuário vê e interage (telas screens, widgets reutilizáveis widgets e tema visual theme).
 
-Gerenciamento de Estado com Provider: Para lidar com a complexidade do estado da UI, especialmente na autenticação, utilizamos o Provider. O AuthController centraliza toda a lógica de formulários, validação e comunicação com os serviços, mantendo a camada de presentation limpa e reativa.
+Gerenciamento de Estado com Provider: O AuthController centraliza toda a lógica de formulários, validação e aceite de termos, mantendo a camada de presentation limpa e reativa.
 
-3. O que já está funcionando (Features)
-✅ Sistema de Autenticação Completo: Cadastro, login, verificação de e-mail e recuperação de senha.
+3. Funcionalidades Implementadas
+✅ Sistema de Autenticação Completo: Fluxo seguro de cadastro (com diálogo de Termos de Uso), login, recuperação de senha e verificação de e-mail.
 
-✅ Quiz de Múltipla Escolha: Sistema de quiz interativo com feedback visual instantâneo (certo/errado) e avanço automático.
+✅ Seleção de Livros (Trilha de Dificuldade): A tela principal exibe os livros em ordem de dificuldade, bloqueando livros de nível superior até que o usuário alcance o nível necessário.
+
+✅ Mapa de Mundos Visual (RF3): Cada livro abre um mapa visual (MVP) com nós de capítulos alternados, mostrando o status (Bloqueado/Disponível/Concluído) de cada um.
+
+✅ Lógica de Desbloqueio (Gating): Implementada a lógica de desbloqueio de capítulos baseada no desempenho (acertar 3/6) e desbloqueio de livros baseada no nível do usuário.
+
+✅ Quiz Interativo e Anti-Farm:
+
+Quiz de múltipla escolha com 6 perguntas por capítulo.
+
+Perguntas e respostas são embaralhadas a cada tentativa para impedir a memorização.
+
+Feedback visual instantâneo (certo/errado) com avanço rápido (500ms).
 
 ✅ Gamificação e Progressão:
 
-Sistema de Níveis e XP: O usuário ganha XP ao completar quizzes, subindo de nível automaticamente.
+Sistema de Níveis e XP: O usuário ganha XP (baseado na dificuldade do livro) ao completar quizzes.
 
-Títulos Mágicos: Cada nível corresponde a um título (Aprendiz, Escrivão, Mago), reforçando a jornada do usuário.
+Regra RN2: XP ganho é reduzido pela metade em repetições de quizzes já concluídos.
 
-Persistência de Dados: O perfil do usuário, com seu XP e nível, é salvo no Cloud Firestore.
+Títulos Mágicos: Cada nível corresponde a um título (Aprendiz, Escrivão, Mago), reforçando a jornada.
+
+Sistema de Conquistas (MVP): Lógica de desbloqueio para 6 conquistas (1º quiz, Níveis 2, 5, 10, Quiz perfeito, 1º Livro), com notificação via SnackBar.
 
 ✅ Tela "Meu Grimório" (Perfil Dinâmico):
 
-Exibe o nome, nível e título mágico do usuário.
+Exibe o nome, "Selo do Guardião" (borda do avatar), nível e título mágico.
 
-Mostra uma barra de progresso visual para o próximo nível.
+Mostra uma barra de progresso visual para o próximo nível com texto motivacional.
 
-Apresenta um card com o desempenho do último quiz realizado.
+Exibe o desempenho do último quiz e as estatísticas do "Índice de Sabedoria" (Tomos Lidos).
 
-✅ Estrutura de Código Profissional: O projeto foi totalmente refatorado para uma arquitetura em camadas (core e presentation), garantindo organização e escalabilidade.
+Link para a tela AchievementsPage que lista todas as conquistas (bloqueadas e desbloqueadas).
 
-✅ Tema Visual Centralizado: Um ThemeData global garante uma identidade visual coesa em todo o aplicativo.
+✅ Correções de UX: Layouts de Autenticação e Perfil ajustados para evitar a necessidade de rolagem (scroll). Botões e textos padronizados.
 
-4. Próximos Passos
-Agora com a fundação do app sólida, nosso foco se volta para aprofundar a experiência de gamificação e conteúdo.
-
-⏳ Rastrear Progresso por Livro: Implementar a lógica para salvar a conclusão de cada quiz, permitindo estatísticas como "Tomos Lidos" e a aplicação de regras de XP decrescente em repetições.
-
-⏳ Implementar o Mapa de Mundos: Criar a interface visual para cada livro, onde os capítulos são "nós" a serem desbloqueados, como descrito na documentação (RF3).
-
-⏳ Criar a "Estante de Conquistas": Desenvolver o sistema de badges e achievements para recompensar feitos específicos dos usuários.
-
-⏳ Otimização de Performance: Investigar e resolver a lentidão inicial do aplicativo (Skipped frames) para garantir uma experiência de usuário fluida desde o primeiro segundo.
-
-5. Como Executar o Projeto
-Clone o repositório: git clone https://github.com/gabriel-correa11/grimorio_6sem.git
+4. Como Executar o Projeto
+Clone o repositório: git clone https://github.com/gabriel-correa11/Grim-rio.git
 
 Garanta que o Flutter está instalado (flutter doctor).
+
+Configure seu próprio projeto no Firebase:
+
+Habilite Authentication (com provedor Email/Senha).
+
+Habilite Cloud Firestore e aplique as seguintes Regras:
+
+JavaScript
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId}/quizAttempts/{attemptId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+Instale o Firebase CLI (npm install -g firebase-tools) e o FlutterFire CLI (dart pub global activate flutterfire_cli).
+
+Faça login (firebase login) e gere seu arquivo de configuração na raiz do projeto: flutterfire configure
 
 Execute flutter pub get para baixar as dependências.
 
@@ -84,16 +105,13 @@ Execute flutter run para iniciar o aplicativo em um emulador ou dispositivo.
 <div id="english-version"></div>
 
 English Version
-<details>
-<summary>Click to expand</summary>
+<details> <summary>Click to expand</summary>
 
-<div align="center">
-<h1>Project Grimorio</h1>
-</div>
+<div align="center"> <h1>Project Grimorio</h1> </div>
 
 <div align="center">
 
-Project Status: In Active Development 🚀
+ Functional MVP 
 
 </div>
 
@@ -105,62 +123,88 @@ In a world where books compete for attention with social media and games that of
 2. Architecture and Technical Decisions
 The project was built with a focus on scalability, maintainability, and performance, using a clean architecture and modern technologies.
 
-Flutter & Dart: The primary choice for cross-platform development (Android/iOS) from a single codebase. Our previous experience with object-oriented programming made the transition to Dart smooth.
+Flutter & Dart: The primary choice for cross-platform development (Android/iOS) from a single codebase.
 
 Firebase (Backend as a Service):
 
-Firebase Authentication: Used for a robust and secure authentication system, including email/password sign-up, email verification, and password recovery.
+Firebase Authentication: Used for a robust and secure authentication system (sign-up, login, email verification, password recovery).
 
-Cloud Firestore: The heart of our gamification. Used as a NoSQL database to persistently save each user's profile and progress (XP, level, last quiz performance, etc.) in real-time.
+Cloud Firestore: The heart of our gamification. Used as a NoSQL database to persistently save each user's profile and progress (XP, level, last quiz performance, unlocked achievements, per-chapter progress) in real-time.
 
 Layered Architecture (Refactored): The code was restructured to follow Clean Architecture principles, clearly separating responsibilities:
 
-core: The layer containing all business logic, data models, and communication with external services (Firebase). It's the app's brain.
+core: The layer containing all business logic, data models (models), services (services), game logic (logic), controllers (providers), and static data (data).
 
 presentation: The layer responsible for everything the user sees and interacts with (screens, widgets, and visual theme).
 
-State Management with Provider: To handle UI state complexity, especially in authentication, we used Provider. The AuthController centralizes all form logic, validation, and communication with services, keeping the presentation layer clean and reactive.
+State Management with Provider: The AuthController centralizes all form logic, validation, and terms acceptance, keeping the presentation layer clean and reactive.
 
-3. What's Already Working (Features)
-✅ Complete Authentication System: Sign-up, login, email verification, and password recovery.
+3. Implemented Features
+✅ Complete Authentication System: Secure flow for sign-up (with Terms of Use dialog), login, password recovery, and email verification.
 
-✅ Multiple-Choice Quiz: An interactive quiz system with instant visual feedback (correct/incorrect) and automatic progression.
+✅ Book Selection (Difficulty Path): The main screen displays books in order of difficulty, locking higher-level books until the user reaches the required level.
+
+✅ Visual World Map (RF3): Each book opens a visual map (MVP) with alternating chapter nodes, showing their status (Locked/Available/Completed) based on Firestore data.
+
+✅ Gating Logic: Implemented chapter unlocking based on performance (e.g., 3/6 correct) and book unlocking based on user level.
+
+✅ Interactive & Anti-Farm Quiz:
+
+Multiple-choice quiz with 6 questions per chapter.
+
+Questions and answers are shuffled on each attempt to prevent memorization.
+
+Instant visual feedback (correct/incorrect) with a fast transition (500ms).
 
 ✅ Gamification and Progression:
 
-Level and XP System: Users earn XP by completing quizzes, leveling up automatically.
+Level & XP System: Users earn XP (based on book difficulty) for completing quizzes.
 
-Magical Titles: Each level corresponds to a title (Apprentice, Scribe, Mage), reinforcing the user's journey.
+RN2 Rule: XP gain is halved for replaying already-completed quizzes.
 
-Data Persistence: The user's profile, with their XP and level, is saved in Cloud Firestore.
+Magical Titles: Each level corresponds to a title (Apprentice, Scribe, Mage).
 
-✅ "My Grimoire" Screen (Dynamic Profile):
+Achievement System (MVP): Logic for unlocking 6 achievements (1st quiz, Levels 2, 5, 10, Perfect quiz, 1st Book), with SnackBar notifications.
 
-Displays the user's name, level, and magical title.
+✅ "My Grimoire" (Dynamic Profile):
 
-Shows a visual progress bar for the next level.
+Displays name, "Guardian Seal" (avatar border), level, and title.
 
-Presents a card with the performance from the last quiz taken.
+Shows a visual progress bar with motivational text.
 
-✅ Professional Code Structure: The project was fully refactored into a layered architecture (core and presentation), ensuring organization and scalability.
+Displays last quiz performance and "Wisdom Index" stats (Tomes Read).
 
-✅ Centralized Visual Theme: A global ThemeData ensures a cohesive visual identity throughout the app.
+Links to the AchievementsPage listing all achievements (locked and unlocked).
 
-4. Next Steps
-With the app's foundation now solid, our focus shifts to deepening the gamification experience and content.
+✅ UX Fixes: Auth and Profile layouts adjusted to avoid scrolling. Standardized buttons and text styles.
 
-⏳ Track Progress per Book: Implement the logic to save the completion of each quiz, enabling stats like "Tomes Read" and applying diminishing XP rules for repeats.
-
-⏳ Implement the World Map: Create the visual interface for each book, where chapters are "nodes" to be unlocked, as described in the documentation (RF3).
-
-⏳ Create the "Achievement Shelf": Develop the system for badges and achievements to reward specific user accomplishments.
-
-⏳ Performance Optimization: Investigate and resolve the app's initial startup slowness (Skipped frames) to ensure a fluid user experience from the very first second.
-
-5. How to Run the Project
-Clone the repository: git clone https://github.com/gabriel-correa11/grimorio_6sem.git
+4. How to Run the Project
+Clone the repository: git clone https://github.com/gabriel-correa11/Grim-rio.git
 
 Ensure Flutter is installed (flutter doctor).
+
+Set up your own project in the Firebase Console:
+
+Enable Authentication (with Email/Password provider).
+
+Enable Cloud Firestore and apply the following Rules:
+
+JavaScript
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId}/quizAttempts/{attemptId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
+Install the Firebase CLI (npm install -g firebase-tools) and the FlutterFire CLI (dart pub global activate flutterfire_cli).
+
+Log in (firebase login) and generate your configuration file in the project's root: flutterfire configure
 
 Run flutter pub get to download dependencies.
 
